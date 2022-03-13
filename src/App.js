@@ -19,7 +19,9 @@ function App() {
       <TodoSearch />
       <TodoList>
         {todos.map((todo) => (
-          <TodoItem key={todo.text} text={todo.text} />
+          // Se puede optimizar el envió del text y completed en el TodoItem utilizando el spread operator
+          // <TodoItem key={todo.text} {...todo} />
+          <TodoItem key={todo.text} text={todo.text} completed={todo.completed} />
         ))}
         {/* Otra alternativa: */}
         {/* {todos.map((todo, index) => (
