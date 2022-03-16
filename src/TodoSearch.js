@@ -1,15 +1,29 @@
-import React from 'react';
-import './TodoSearch.css';
+import React from "react";
+import "./TodoSearch.css";
 
-function TodoSearch() {
+function TodoSearch({ searchValue, setSearchValue }) {
   const onSearchValueChange = (event) => {
-    console.log(event.target.value);
-  }
-   
-  
+    setSearchValue(event.target.value);
+  };
+
+  //Reset input search
+  const handleKeyDown = (event) => {
+    event.keyCode === 27 && setSearchValue('');
+  };
+
   return (
-    <input className="TodoSearch" placeholder="ph" onChange={onSearchValueChange} />
-  )
+    <>
+      <span key="value" className="">{`Estas buscando: ${searchValue}`}</span>
+      <input
+        key="searchFunction"
+        className="TodoSearch"
+        placeholder="ph"
+        onChange={onSearchValueChange}
+        value={searchValue}
+        onKeyDown={handleKeyDown}
+      />
+    </>
+  );
 }
 
-export {TodoSearch}; 
+export { TodoSearch };
