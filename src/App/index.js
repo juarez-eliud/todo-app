@@ -1,15 +1,24 @@
 import React, { useState } from "react";
 import { AppUI } from "./AppUI";
 
-const defaultTodos = [
+/* const defaultTodos = [
   { text: "a", completed: true },
   { text: "b", completed: true },
   { text: "c", completed: false },
   { text: "d", completed: false },
-];
+]; */
 
 function App() {
-  const [todos, setTodos] = useState(defaultTodos);
+  const localStorageTodos =  localStorage.getItem('TODOS_V1');
+  let parsedTodos;
+  if(!localStorageTodos) {
+    localStorage.setItem('TODOS_V1', JSON.stringify([]));
+    parsedTodos = [];
+  }else{
+    parsedTodos = JSON.parse(localStorageTodos);
+  }
+
+  const [todos, setTodos] = useState(parsedTodos);
   const [searchValue, setSearchValue] = useState("");
   const completedTodos = todos.filter((todo) => todo.completed).length;
   // Other way, bang bang operator:
@@ -35,6 +44,12 @@ function App() {
   /* Queda mucho más compacto y no es necesario hacer la validación inicial del largo
   puesto que include si le pasas una cadena vacía te muestra todos. */
 
+  const saveTodos = (newTodos) => {
+    const stringifiedTodos = JSON.stringify(newTodos);
+    localStorage.setItem('TODOS_V1', stringifiedTodos);
+    setTodos(newTodos);
+  }
+
   const completeTodo = (text) => {
     const todoIndex = todos.findIndex((todo) => todo.text === text);
     /* No se puede entrar a editar el estado direcamente, si se hace así 
@@ -46,7 +61,7 @@ function App() {
     newTodos[todoIndex].completed = true;
     //Other way
     // newTodos[todoIndex] = { text: todos[todoIndex].text, completed: true }
-    setTodos(newTodos);
+    saveTodos(newTodos);
   };
 
   const deleteTodo = (text) => {
@@ -55,7 +70,7 @@ function App() {
     /* Una analogía referente al método splice es sacar una rebanada de pan
     se indica desde donde se va a empezar a cortar y cuantas tajadas se van a sacar */
     newTodos.splice(todoIndex, 1);
-    setTodos(newTodos);
+    saveTodos(newTodos);
   };
 
   return (
