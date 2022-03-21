@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { AppUI } from "./AppUI";
 
 /* const defaultTodos = [
@@ -10,27 +10,53 @@ import { AppUI } from "./AppUI";
 
 // Custom Hook
 function useLocalStorage(itemName, initialValue) {
-  const localStorageItem = localStorage.getItem(itemName);
-  let parsedItem;
-  if (!localStorageItem) {
-    localStorage.setItem(itemName, JSON.stringify(initialValue));
-    parsedItem = [];
-  } else {
-    parsedItem = JSON.parse(localStorageItem);
-  }
-  const [item, setItem] = useState(parsedItem);
-  const saveItem = (newItem) => {
-    const stringifiedItem = JSON.stringify(newItem);
-    localStorage.setItem(itemName, stringifiedItem);
-    setItem(newItem);
-  };
+  //Simulando obtener datos de API
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [item, setItem] = useState(initialValue);
+  useEffect(() => {
+    setTimeout(() => {
+      try {
+        const localStorageItem = localStorage.getItem(itemName);
+        let parsedItem;
+        if (!localStorageItem) {
+          localStorage.setItem(itemName, JSON.stringify(initialValue));
+          parsedItem = [];
+        } else {
+          parsedItem = JSON.parse(localStorageItem);
+        }
+        //Actualizando estado
+        setItem(parsedItem);
+        setLoading(false);
+      } catch (error) {
+        setError(error);
+      }
+    }, 3000);
+  });
 
-  return [item, saveItem];
+  const saveItem = (newItem) => {
+    try {
+      const stringifiedItem = JSON.stringify(newItem);
+      localStorage.setItem(itemName, stringifiedItem);
+      setItem(newItem);
+    } catch (error) {
+      setError(error);
+    }
+  };
+  /* Si se tienen muchos estados en el custom React Hook no es recomendable 
+  retornar un arreglo con todas las propiedades sino más bien un objeto. */
+  return { item, saveItem, loading, error };
 }
 
 function App() {
-  //Para que pueda funcionar el custom hook debe retornar la propiedad (item) y la función (saveItem)
-  const [todos, saveTodos] = useLocalStorage("TODOS_V1", []);
+  /* Para que pueda funcionar el custom hook debe retornar la propiedad (item) y la función (saveItem)
+  Para renombrar las propiedades del objeto se hace mediante el símbolo de dos puntos (:) */
+  const {
+    item: todos,
+    saveItem: saveTodos,
+    loading,
+    error,
+  } = useLocalStorage("TODOS_V1", []);
 
   const [searchValue, setSearchValue] = useState("");
   const completedTodos = todos.filter((todo) => todo.completed).length;
@@ -82,6 +108,8 @@ function App() {
 
   return (
     <AppUI
+      loading={loading}
+      error={error}
       totalTodos={totalTodos}
       completedTodos={completedTodos}
       searchValue={searchValue}
