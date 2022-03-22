@@ -1,7 +1,10 @@
-import React from "react";
+import React, {useContext}from "react";
 import "./TodoSearch.css";
+import { TodoContext } from "../TodoContext";
 
-function TodoSearch({ searchValue, setSearchValue }) {
+function TodoSearch() {
+  const { searchValue, setSearchValue } = useContext(TodoContext);
+
   const onSearchValueChange = (event) => {
     setSearchValue(event.target.value);
   };
@@ -17,7 +20,7 @@ function TodoSearch({ searchValue, setSearchValue }) {
       <input
         key="searchFunction"
         className="TodoSearch"
-        placeholder="ph"
+        placeholder="Search"
         onChange={onSearchValueChange}
         value={searchValue}
         onKeyDown={handleKeyDown}
